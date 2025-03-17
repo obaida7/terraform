@@ -24,7 +24,7 @@ resource "google_container_node_pool" "primary_nodes" {
 
 terraform {
   backend "gcs" {
-    bucket = "my-terraform-state-bucket"
+    bucket = "my-terraform-state-bucket-gke"
     prefix = "gke-cluster/terraform.tfstate"
   }
 }
