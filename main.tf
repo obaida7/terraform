@@ -24,15 +24,39 @@ resource "google_container_node_pool" "primary_nodes" {
 }
 
 resource "google_project_iam_member" "github_actions_compute_admin" {
-  project = "synthetic-grail-448520-b0"
+  project = var.project_id
   role    = "roles/compute.instanceAdmin.v1"
   member  = "serviceAccount:github-actions@synthetic-grail-448520-b0.iam.gserviceaccount.com"
 }
 
 resource "google_project_iam_member" "github_actions_container_admin" {
-  project = "synthetic-grail-448520-b0"
+  project = var.project_id
   role    = "roles/container.admin"
   member  = "serviceAccount:github-actions@synthetic-grail-448520-b0.iam.gserviceaccount.com"
+}
+
+resource "google_project_iam_member" "github_actions_roles" {
+  for_each = toset([
+    "roles/iam.serviceAccountUser",
+    "roles/compute.admin",
+    "roles/container.admin",
+    "roles/compute.instanceAdmin.v1"
+  ])
+
+  project = var.project_id
+  role    = each.key
+  member  = "serviceAccount:${var.github_actions_sa}"
+}
+
+resource "google_project_service" "enable_services" {
+  for_each = toset([
+    "cloudresourcemanager.googleapis.com",
+    "compute.googleapis.com",
+    "container.googleapis.com"
+  ])
+
+  project = var.project_id
+  service = each.key
 }
 
 terraform {
