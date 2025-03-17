@@ -4,7 +4,7 @@ variable "project_id" {
 variable "region" {
   default = "us-central1"
 }
-variable "cluster_name" {
+variable "cluster-name" {
   default = "cluster1"
 }
 variable "github_actions_sa" {
