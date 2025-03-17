@@ -1,0 +1,26 @@
+name: Destroy GKE Cluster
+
+on:
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  destroy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Initialize Terraform
+        run: terraform init
+
+      - name: Destroy GKE Cluster
+        run: terraform destroy -auto-approve -var="cluster_name=${{ secrets.GKE_CLUSTER_NAME }}"

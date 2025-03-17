@@ -1,4 +1,4 @@
-name: Deploy and Destroy GKE Cluster
+name: Deploy GKE Cluster
 
 on:
   push:
@@ -6,19 +6,18 @@ on:
       - main  # Triggers on push to main
 
   workflow_dispatch:
+    # Manual trigger with the default action set to 'deploy'
     inputs:
       action:
-        description: "Choose action (deploy/destroy)"
+        description: "Deploy the GKE cluster"
         required: true
         default: "deploy"
         type: choice
         options:
           - deploy
-          - destroy
 
 jobs:
   deploy:
-    if: github.event_name == 'push' || github.event.inputs.action == 'deploy'
     runs-on: ubuntu-latest
 
     steps:
@@ -44,26 +43,3 @@ jobs:
 
       - name: Apply Terraform Changes
         run: terraform apply -auto-approve
-
-  destroy:
-    if: github.event.inputs.action == 'destroy'
-    runs-on: ubuntu-latest
-    needs: deploy  # Ensures deployment is complete before destruction (optional)
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Authenticate with Google Cloud
-        uses: google-github-actions/auth@v1
-        with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
-
-      - name: Initialize Terraform
-        run: terraform init
-
-      - name: Destroy GKE Cluster
-        run: terraform destroy -auto-approve -var="cluster_name=${{ secrets.GKE_CLUSTER_NAME }}"
