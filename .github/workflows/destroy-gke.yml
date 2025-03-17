@@ -23,5 +23,5 @@ jobs:
         run: terraform init
 
       - name: Destroy GKE Cluster
-        run: terraform destroy -auto-approve -var="disable_dependent_services=true"
+        run: terraform destroy -auto-approve -var="cluster_name=${{ secrets.GKE_CLUSTER_NAME }}" -var="disable_dependent_services=true"
 
