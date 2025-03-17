@@ -23,6 +23,18 @@ resource "google_container_node_pool" "primary_nodes" {
   }
 }
 
+resource "google_project_iam_member" "github_actions_compute_admin" {
+  project = "synthetic-grail-448520-b0"
+  role    = "roles/compute.instanceAdmin.v1"
+  member  = "serviceAccount:github-actions@synthetic-grail-448520-b0.iam.gserviceaccount.com"
+}
+
+resource "google_project_iam_member" "github_actions_container_admin" {
+  project = "synthetic-grail-448520-b0"
+  role    = "roles/container.admin"
+  member  = "serviceAccount:github-actions@synthetic-grail-448520-b0.iam.gserviceaccount.com"
+}
+
 terraform {
   backend "gcs" {
     bucket = "my-terraform-state-bucket-gke"
